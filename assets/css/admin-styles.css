@@ -1,0 +1,50 @@
+.wrap {
+  font-family: Arial, sans-serif;
+}
+
+#discount-rules-container {
+  margin-top: 20px;
+}
+
+.discount-rule {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.discount-rule:hover {
+  background: #f1f1f1;
+}
+
+.discount-rule input[type="text"],
+.discount-rule input[type="number"],
+.discount-rule select {
+  width: calc(100% - 20px);
+  padding: 8px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
+
+.discount-rule button.remove-rule {
+  background-color: #dc3232;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.button-primary {
+  background-color: #0073aa;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  text-decoration: none;
+  display: inline-block;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+.button-primary:hover {
+  background-color: #005177;
+}

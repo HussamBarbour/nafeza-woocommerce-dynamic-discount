@@ -1,0 +1,16 @@
+.nafeza-discount-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.nafeza-discount-table th,
+.nafeza-discount-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+.nafeza-discount-table th {
+  background-color: #f2f2f2;
+}
