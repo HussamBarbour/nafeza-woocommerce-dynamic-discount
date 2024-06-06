@@ -28,7 +28,7 @@ require_once plugin_dir_path(__FILE__) . 'includes/discount-functions.php';
 // Enqueue admin styles and scripts
 function nafeza_admin_assets()
 {
-  wp_enqueue_style('nafeza-admin-styles', plugin_dir_url(__FILE__) . 'assets/css/admin-styles.css');
+  wp_enqueue_style('nafeza-admin-styles', plugin_dir_url(__FILE__) . 'assets/css/admin-styles.css', array(), time());
   wp_enqueue_script('nafeza-admin-scripts', plugin_dir_url(__FILE__) . 'assets/js/admin-scripts.js', array('jquery'), time(), true);
 
 

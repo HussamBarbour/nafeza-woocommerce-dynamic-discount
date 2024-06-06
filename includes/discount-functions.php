@@ -3,26 +3,16 @@
 // Ensure WooCommerce is active
 if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
 
-  // Add filter to apply discount
-  add_action('woocommerce_before_calculate_totals', 'nafeza_apply_dynamic_discounts', 10, 1);
-
   function nafeza_apply_dynamic_discounts($cart)
   {
-    // Check if cart is valid
     if (did_action('woocommerce_before_calculate_totals') >= 2)
       return;
 
-    // Get discount rules from options
     $discount_rules = nafeza_get_discount_rules();
     if (count($discount_rules) == 0) return;
 
-
-
-    // Loop through cart items
     foreach ($cart->get_cart() as $cart_item_key => $cart_item) {
       $product_id = $cart_item['product_id'];
-
-      // Get the original product ID if WPML is active
       if (defined('ICL_SITEPRESS_VERSION')) {
         $original_product_id = apply_filters('wpml_object_id', $product_id, 'product', false, wpml_get_default_language());
       } else {
@@ -35,31 +25,25 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
           $price = $cart_item['data']->get_regular_price();
           $discount = $rule['discount_type'] == 'percentage' ? ($rule['discount_value'] / 100) : $rule['discount_value'];
 
-          // Apply discount
           if ($discount > 0) {
             $new_price = $rule['discount_type'] == 'percentage' ? ($price - ($price * $discount)) : ($price - $discount);
             $cart_item['data']->set_price($new_price);
-
-            // Store discount amount in session to display in cart
             WC()->session->set('nafeza_discount_' . $product_id, $price - $new_price);
-            break; // Apply only the first matched rule
+            break;
           }
         } else {
-          // Remove any existing discount if conditions are not met
           WC()->session->__unset('nafeza_discount_' . $product_id);
         }
       }
     }
   }
+  add_action('woocommerce_before_calculate_totals', 'nafeza_apply_dynamic_discounts', 10, 1);
+
 
   // Add discount message next to the price in the cart
-  add_filter('woocommerce_get_item_data', 'nafeza_display_discount_message', 10, 2);
-
   function nafeza_display_discount_message($item_data, $cart_item)
   {
     $product_id = $cart_item['product_id'];
-
-    // Get the translated product ID if WPML is active
     if (defined('ICL_SITEPRESS_VERSION')) {
       $product_id = apply_filters('wpml_object_id', $product_id, 'product', false, wpml_get_default_language());
     }
@@ -73,32 +57,51 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
     }
     return $item_data;
   }
+  add_filter('woocommerce_get_item_data', 'nafeza_display_discount_message', 10, 2);
 
 
 
 
   // Add discount table to product pages
-  add_action('woocommerce_single_product_summary', 'nafeza_display_discount_table', 25);
-
   function nafeza_display_discount_table()
   {
     wc_get_template('discount-table.php', array(), '', plugin_dir_path(__FILE__) . '../templates/');
   }
+  add_action('woocommerce_single_product_summary', 'nafeza_display_discount_table', 25);
 }
 
 
 function nafeza_get_discount_rules()
 {
-  $discount_rules = get_option('nafeza_discount_rules', []);
-  if (empty($discount_rules)) return [];
+  $args = array(
+    'post_type' => 'nafeza_discount_rule',
+    'posts_per_page' => -1,
+    'post_status' => 'publish',
+  );
+
+  $discount_rules = get_posts($args);
+  $rules = array();
+
+  foreach ($discount_rules as $rule) {
+    $meta = get_post_meta($rule->ID);
+    $rules[] = array(
+      'product_id' => $meta['product_id'][0],
+      'quantity_from' => $meta['quantity_from'][0],
+      'quantity_to' => $meta['quantity_to'][0],
+      'discount_type' => $meta['discount_type'][0],
+      'discount_value' => $meta['discount_value'][0],
+      'priority' => $meta['priority'][0],
+    );
+  }
 
   // Sort discount rules by priority
-  usort($discount_rules, function ($a, $b) {
+  usort($rules, function ($a, $b) {
     return (int)$a['priority'] - (int)$b['priority'];
   });
 
-  return $discount_rules;
+  return $rules;
 }
+
 
 
 

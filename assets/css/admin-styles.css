@@ -48,3 +48,12 @@
 .button-primary:hover {
   background-color: #005177;
 }
+
+.nafeza-rule-options label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.nafeza-rule-options input {
+  width: 100%;
+}
