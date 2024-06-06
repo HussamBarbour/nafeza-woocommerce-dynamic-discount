@@ -79,19 +79,27 @@ function nafeza_get_discount_rules()
     'post_status' => 'publish',
   );
 
-  $discount_rules = get_posts($args);
+  $discount_rules_posts = get_posts($args);
   $rules = array();
 
-  foreach ($discount_rules as $rule) {
-    $meta = get_post_meta($rule->ID);
-    $rules[] = array(
-      'product_id' => $meta['product_id'][0],
-      'quantity_from' => $meta['quantity_from'][0],
-      'quantity_to' => $meta['quantity_to'][0],
-      'discount_type' => $meta['discount_type'][0],
-      'discount_value' => $meta['discount_value'][0],
-      'priority' => $meta['priority'][0],
-    );
+  foreach ($discount_rules_posts as $post) {
+
+    $product_ids = get_post_meta($post->ID, 'product_ids', true);
+    $selected_products = isset($product_ids) ? maybe_unserialize($product_ids) : [];
+    $meta = get_post_meta($post->ID);
+    if (!is_array($selected_products)) {
+      $selected_products = array();
+    }
+    foreach ($selected_products as $product_id) {
+      $rules[] = array(
+        'product_id' => $product_id,
+        'quantity_from' => $meta['quantity_from'][0],
+        'quantity_to' => $meta['quantity_to'][0],
+        'discount_type' => $meta['discount_type'][0],
+        'discount_value' => $meta['discount_value'][0],
+        'priority' => $meta['priority'][0],
+      );
+    }
   }
 
   // Sort discount rules by priority
@@ -101,6 +109,7 @@ function nafeza_get_discount_rules()
 
   return $rules;
 }
+
 
 
 

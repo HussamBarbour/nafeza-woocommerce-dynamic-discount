@@ -1,6 +1,6 @@
 jQuery(document).ready(function () {
   if (typeof nafezaWooDynData !== 'undefined') {
-    var nafeza_discount_rules = JSON.parse(nafezaWooDynData.discount_rules);
+    var nafeza_discount_rules = nafezaWooDynData.discount_rules;
   }
   if (nafeza_discount_rules.length > 0) {
     jQuery(document).on('change', 'input.qty', function () {

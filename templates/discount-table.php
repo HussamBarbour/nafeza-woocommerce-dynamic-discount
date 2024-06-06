@@ -1,5 +1,4 @@
 <?php
-
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
@@ -13,33 +12,7 @@ if (defined('ICL_SITEPRESS_VERSION')) {
 }
 
 $regular_price = floatval($product->get_price()); // Ensure regular price is a float
-
-// Fetch discount rules from custom post type
-$args = array(
-    'post_type' => 'nafeza_discount_rule',
-    'posts_per_page' => -1,
-    'post_status' => 'publish',
-);
-
-$discount_rules_posts = get_posts($args);
-$discount_rules = array();
-
-foreach ($discount_rules_posts as $post) {
-    $meta = get_post_meta($post->ID);
-    $discount_rules[] = array(
-        'product_id' => $meta['product_id'][0],
-        'quantity_from' => $meta['quantity_from'][0],
-        'quantity_to' => $meta['quantity_to'][0],
-        'discount_type' => $meta['discount_type'][0],
-        'discount_value' => $meta['discount_value'][0],
-        'priority' => $meta['priority'][0],
-    );
-}
-
-// Ensure $discount_rules is an array
-if (!is_array($discount_rules)) {
-    $discount_rules = [];
-}
+$discount_rules = nafeza_get_discount_rules(); // Fetch discount rules from custom post type
 
 $rules_for_product = array_filter($discount_rules, function ($rule) use ($product_id) {
     return $rule['product_id'] == $product_id;
