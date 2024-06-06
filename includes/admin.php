@@ -1,5 +1,6 @@
 <?php
 
+
 // Add admin menu for discount rules
 add_action('admin_menu', 'nafeza_add_admin_menu');
 add_action('admin_init', 'nafeza_register_settings');

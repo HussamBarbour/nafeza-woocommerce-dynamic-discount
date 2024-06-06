@@ -13,13 +13,10 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
       return;
 
     // Get discount rules from options
-    $discount_rules = get_option('nafeza_discount_rules', []);
-    if (empty($discount_rules)) return;
+    $discount_rules = nafeza_get_discount_rules();
+    if (count($discount_rules) == 0) return;
 
-    // Sort discount rules by priority
-    usort($discount_rules, function ($a, $b) {
-      return $a['priority'] - $b['priority'];
-    });
+
 
     // Loop through cart items
     foreach ($cart->get_cart() as $cart_item_key => $cart_item) {
@@ -88,3 +85,24 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
     wc_get_template('discount-table.php', array(), '', plugin_dir_path(__FILE__) . '../templates/');
   }
 }
+
+
+function nafeza_get_discount_rules()
+{
+  $discount_rules = get_option('nafeza_discount_rules', []);
+  if (empty($discount_rules)) return [];
+
+  // Sort discount rules by priority
+  usort($discount_rules, function ($a, $b) {
+    return (int)$a['priority'] - (int)$b['priority'];
+  });
+
+  return $discount_rules;
+}
+
+
+
+add_filter('woocommerce_product_price_class', function ($class) {
+  $class .= ' nafeza-single-product-price';
+  return $class;
+});

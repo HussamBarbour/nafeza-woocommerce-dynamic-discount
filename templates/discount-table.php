@@ -26,7 +26,7 @@ $rules_for_product = array_filter($discount_rules, function ($rule) use ($produc
 
 if (!empty($rules_for_product)) {
     usort($rules_for_product, function ($a, $b) {
-        return $a['quantity_from'] - $b['quantity_from'];
+        return (int)$a['priority'] - (int)$b['priority'];
     });
 
     echo '<div class="nafeza-discount-container">';
